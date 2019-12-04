@@ -1,7 +1,8 @@
-import tkinter as tk
+import os
 import cv2
 import threading
-import os
+import tkinter as tk
+from tkinter import messagebox
 
 def tkFunction():
     def addTracker():
@@ -9,9 +10,12 @@ def tkFunction():
         key = ord('t')
         selectedTracker = tracker_selection.get()
 
-    def resetTracker():
+    def resetTrackers():
         global key
-        key = ord('r')
+        reset_response = messagebox.askquestion("Reset Trackers","Are you sure you want to reset all trackers?")
+        if reset_response == 'yes':
+            messagebox.showinfo("Reset Tracker","Tracker reset successful!")
+            key = ord('r')
 
     def flipFlag():
         global flip
@@ -19,9 +23,21 @@ def tkFunction():
 
     def initCapture():
         global num_iters
-        num_iters = n_images.get() * num_objects
-        for i in range(num_objects):
-            os.makedirs(str(f"captures/object{i}"),exist_ok=True)
+        if num_objects == 0:
+            messagebox.showinfo("No objects to capture","No objects to track. Add atleast 1 ROI to capture!")
+        elif n_images.get() == 0:
+            messagebox.showinfo("Capture size not specified","Capture size can't be 0. Enter a value > 0 to initiate capture!")
+        else:
+            num_iters = n_images.get() * num_objects
+            for i in range(num_objects):
+                os.makedirs(str(f"captures/object{i}"),exist_ok=True)
+
+    def exitApplication():
+        global key
+        exit_response = messagebox.askquestion("Exit Application","Are you sure you want to exit?")
+        if exit_response == 'yes':
+            key = 27
+            root.destroy()
 
     root = tk.Tk()
     tracker_selection = tk.StringVar(root)
@@ -33,10 +49,11 @@ def tkFunction():
     root.geometry("300x300")
     tk.OptionMenu(root, tracker_selection, *AVAILABLE_TRACKERS).pack()
     tk.Checkbutton(root, variable=flip_flag, command=flipFlag, text="Flip frame").pack()
+    tk.Button(root, command=addTracker, text="Add Tracker").pack()
     tk.Entry(root,textvariable=n_images).pack()
     tk.Button(root,command=initCapture,text="Capture").pack()
-    tk.Button(root, command=addTracker, text="+").pack()
-    tk.Button(root, command=resetTracker,text="Reset").pack()
+    tk.Button(root, command=resetTrackers,text="Reset").pack()
+    tk.Button(root,command=exitApplication,text="Exit").pack()
     root.mainloop()
 
 def cvFunction():
@@ -77,23 +94,24 @@ def cvFunction():
         cv2.imshow("MultiCapture", frame)
 
 
-        # use GUI buttons or press t to add trackers
+        # use GUI buttons or press 't' to add trackers
         if key == ord('t'):
             selection = cv2.selectROI("MultiCapture", frame, fromCenter=False, showCrosshair=False)
             tracker = AVAILABLE_TRACKERS[selectedTracker]()
             active_trackers.add(tracker, frame, selection)
             num_objects = len(active_trackers.getObjects())
 
-        # use GUI button or r to reset all trackers
+        # use GUI button or 'r' to reset all trackers
         if key == ord('r'):
             active_trackers = cv2.MultiTracker_create()
 
-        key = cv2.waitKey(1) & 0xFF
-
+        # use GUI button or 'esc' to release capture
         if key == 27:
             break
 
-            cap.release()
+        key = cv2.waitKey(1) & 0xFF
+
+    cap.release()
     cv2.destroyAllWindows()
 
 
