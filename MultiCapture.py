@@ -40,20 +40,32 @@ def tkFunction():
             root.destroy()
 
     root = tk.Tk()
+
     tracker_selection = tk.StringVar(root)
     flip_flag = tk.IntVar(root)
     n_images = tk.IntVar(root)
     flip_flag.set(1)
     tracker_selection.set("KCF Tracker")
+
     root.title("MultiCapture")
     root.geometry("300x300")
-    tk.OptionMenu(root, tracker_selection, *AVAILABLE_TRACKERS).pack()
-    tk.Checkbutton(root, variable=flip_flag, command=flipFlag, text="Flip frame").pack()
-    tk.Button(root, command=addTracker, text="Add Tracker").pack()
-    tk.Entry(root,textvariable=n_images).pack()
-    tk.Button(root,command=initCapture,text="Capture").pack()
-    tk.Button(root, command=resetTrackers,text="Reset").pack()
-    tk.Button(root,command=exitApplication,text="Exit").pack()
+
+    frame_track = tk.LabelFrame(root,text="Track",width=300,height=300)
+    frame_track.pack()
+    tk.OptionMenu(frame_track, tracker_selection, *AVAILABLE_TRACKERS).pack()
+    tk.Checkbutton(frame_track, variable=flip_flag, command=flipFlag, text="Flip frame").pack()
+    tk.Button(frame_track, command=addTracker, text="Add Tracker").pack()
+
+    frame_capture = tk.LabelFrame(root,text="Capture",width=100,height=100)
+    frame_capture.pack()
+    tk.Entry(frame_capture,textvariable=n_images,relief="flat",width=5).pack()
+    tk.Button(frame_capture,command=initCapture,text="Capture").pack()
+
+    frame_danger = tk.LabelFrame(root,text="Danger zone",width=100,height=100)
+    frame_danger.pack()
+    tk.Button(frame_danger, command=resetTrackers,text="Reset").pack()
+    tk.Button(frame_danger,command=exitApplication,text="Exit").pack()
+
     root.mainloop()
 
 def cvFunction():
@@ -103,6 +115,7 @@ def cvFunction():
 
         # use GUI button or 'r' to reset all trackers
         if key == ord('r'):
+            shapes = []
             active_trackers = cv2.MultiTracker_create()
 
         # use GUI button or 'esc' to release capture
