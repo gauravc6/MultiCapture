@@ -14,8 +14,8 @@ def tkFunction():
         global key
         reset_response = messagebox.askquestion("Reset Trackers","Are you sure you want to reset all trackers?")
         if reset_response == 'yes':
-            messagebox.showinfo("Reset Tracker","Tracker reset successful!")
             key = ord('r')
+            messagebox.showinfo("Reset Tracker","Tracker reset successful!")
 
     def flipFlag():
         global flip
@@ -49,22 +49,25 @@ def tkFunction():
 
     root.title("MultiCapture")
     root.geometry("300x300")
+    root.resizable(0,0)
 
-    frame_track = tk.LabelFrame(root,text="Track",width=300,height=300)
-    frame_track.pack()
-    tk.OptionMenu(frame_track, tracker_selection, *AVAILABLE_TRACKERS).pack()
-    tk.Checkbutton(frame_track, variable=flip_flag, command=flipFlag, text="Flip frame").pack()
-    tk.Button(frame_track, command=addTracker, text="Add Tracker").pack()
+    frame_track = tk.LabelFrame(root,text="Track",relief="groove")
+    frame_track.place(relx=0.04, rely=0.04, relheight=0.4, relwidth=0.4)
+    tk.OptionMenu(frame_track, tracker_selection, *AVAILABLE_TRACKERS).grid(row=0,column=0)
+    tk.Checkbutton(frame_track, variable=flip_flag, command=flipFlag, text="Flip frame").grid(row=1,column=0)
+    tk.Button(frame_track, command=addTracker, text="Add Tracker").grid(row=2,column=0)
 
-    frame_capture = tk.LabelFrame(root,text="Capture",width=100,height=100)
-    frame_capture.pack()
-    tk.Entry(frame_capture,textvariable=n_images,relief="flat",width=5).pack()
-    tk.Button(frame_capture,command=initCapture,text="Capture").pack()
+    frame_capture = tk.LabelFrame(root,text="Capture",relief="groove")
+    frame_capture.place(relx=0.48,rely=0.04,relheight=0.4,relwidth=0.5)
+    tk.Label(frame_capture,text="Enter no. of images\nrequired: ").place(relx=0.04,rely=0.04)
+    tk.Entry(frame_capture,textvariable=n_images,relief="flat",width=10).place(relx=0.3,rely=0.4)
+    tk.Button(frame_capture,command=initCapture,text="Capture",width=10).place(relx=0.23,rely=0.65)
 
-    frame_danger = tk.LabelFrame(root,text="Danger zone",width=100,height=100)
-    frame_danger.pack()
-    tk.Button(frame_danger, command=resetTrackers,text="Reset").pack()
-    tk.Button(frame_danger,command=exitApplication,text="Exit").pack()
+    frame_danger = tk.LabelFrame(root,text="Danger zone",width=100,height=100,relief="groove")
+    frame_danger.place(relx=0.22,rely=0.48,relheight=0.4,relwidth=0.5)
+    tk.Label(frame_danger,text="Reset all trackers: ").place(relx=0.04,rely=0.05)
+    tk.Button(frame_danger, command=resetTrackers,text="Reset",width=10).place(relx=0.2,rely=0.3)
+    tk.Button(frame_danger,command=exitApplication,text="Exit",width=10).place(relx=0.2,rely=0.65)
 
     root.mainloop()
 
