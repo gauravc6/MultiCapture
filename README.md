@@ -2,6 +2,8 @@
 ### Description
 * Track and capture multiple objects in real time.
 
+![Screenshot](Screenshot.jpg)
+
 ### Dependancies
 * `opencv-python` - can be installed via `pip` or `conda`.
 
